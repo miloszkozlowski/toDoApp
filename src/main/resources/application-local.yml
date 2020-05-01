@@ -1,0 +1,11 @@
+spring:
+ jpa:
+  properties.hibernate.format_sql: true
+  show-sql: true
+  hibernate.ddl-auto: validate
+ h2.console:
+  enabled: true
+  path: '/konsolah2'
+ datasource:
+  url: 'jdbc:h2:file:/Users/milosz/eclipse-workspace/toDoApp.zip_expanded/toDoApp/toDoDB'
+

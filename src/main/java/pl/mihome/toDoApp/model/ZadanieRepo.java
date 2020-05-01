@@ -21,4 +21,6 @@ public interface ZadanieRepo {
 	Zadanie save(Zadanie entity);
 	
 	boolean existsById(Long id);
+	
+	boolean existsByDoneIsFalseAndGrupa_Id(Long taskGroupId);
 }

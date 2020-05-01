@@ -4,7 +4,9 @@ package pl.mihome.toDoApp.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,18 +51,39 @@ public class ZadanieController {
 		return ResponseEntity.ok(repository.findAll(page));
 	}
 	
+	@Transactional
 	@PutMapping("/taski/{id}")
-	ResponseEntity<?> zmienZadanie(@PathVariable("id") Long id, @RequestBody @Valid Zadanie doAktualizacji) //@RequestBody - spring wypełni z ciała żądania PUT
+	public ResponseEntity<?> zmienZadanie(@PathVariable("id") Long id, @RequestBody @Valid Zadanie doAktualizacji) //@RequestBody - spring wypełni z ciała żądania PUT
 	{
 		if(repository.existsById(id))
 		{
+			Optional<Zadanie> oryginal = repository.findById(id);
 			logger.info("Zadanie aktualizowane");
-			doAktualizacji.setId(id);
-			repository.save(doAktualizacji);
+			oryginal.ifPresent(zad -> zad.updateFrom(doAktualizacji));
+			oryginal.ifPresent(zad -> System.out.println(zad.getDescription()));
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
 		
+	}
+	
+	
+	/*
+	 * żeby zadziała się zmiana w bazie danych na podstawie zmiany pola obiektu
+	 * ta metoda musi miec code{@Transactional} oraz być publiczna.
+	 */
+	@Transactional
+	@PatchMapping("/taski/{id}")
+	public ResponseEntity<?> toggleZadanie(@PathVariable Long id) {
+		if(!repository.existsById(id))
+			return ResponseEntity.notFound().build();
+		logger.info("Zmienianie Done...");
+		repository.findById(id).ifPresent(zadanie -> {
+			zadanie.setDone(!zadanie.isDone());
+			logger.info("Nowy status done dla id "+id+": "+zadanie.isDone());
+		});
+		
+		return ResponseEntity.noContent().build();
 	}
 	
 //	@PostMapping("/taski") lub w starszych wersjach (poniżej 4.3):

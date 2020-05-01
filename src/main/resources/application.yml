@@ -1,0 +1,6 @@
+spring:
+ profiles.active: "local"
+ main.banner-mode: "OFF"
+task:
+ template:
+  allowMultipleTasks: false

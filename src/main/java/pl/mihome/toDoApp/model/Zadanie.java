@@ -1,52 +1,75 @@
 package pl.mihome.toDoApp.model;
 
+import java.time.LocalDateTime;
+
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-
-
 
 
 
 @Entity
 @Table(name = "tasks")
-public class Zadanie {
+public class Zadanie extends ZadanieBaza {
+		
+	private LocalDateTime deadline;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@NotBlank(message = "Treść zadania nie może być pusta")
-	private String desc;
-	@NotNull(message = "Done musi mieć wartość")
-	private Boolean done;
+	/*
+	 * 	@AttributeOverrides({
+		@AttributeOverride(column = @Column(name = "InnaNazwaKolumnnyNizWDataAudit"), name = "nazwaPolaZDataAudit")
+	})
+	 * 	Można tego użyć kiedy w danej encji jednorazowo 
+	 */
+	@Embedded
+	private Audit audit = new Audit();
 	
+	@ManyToOne
+	@JoinColumn(name = "task_groups_id")
+	private ZadanieGrupa grupa;
+
 	
 	Zadanie(){ //pusty konstruktor jest potrzebny na wypadek zmiany rodzaju Repository Hibernate mógłby mieć problemy 
 	}
 	
-	public Long getId() {
-		return id;
+	public Zadanie(String description, LocalDateTime deadline) {
+		this(description, deadline, null);
 	}
-	public void setId(Long id) {
-		this.id = id;
+	
+	public Zadanie(String description, LocalDateTime deadline, ZadanieGrupa grupa) {
+		super.setDescription(description);
+		this.deadline = deadline;
+		if(grupa != null)
+			this.grupa = grupa;
+	
 	}
-	public String getDesc() {
-		return desc;
+	
+
+	public LocalDateTime getDeadline() {
+		return deadline;
 	}
-	public void setDesc(String desc) {
-		this.desc = desc;
+
+	public void setDeadline(LocalDateTime deadline) {
+		this.deadline = deadline;
 	}
-	public Boolean getDone() {
-		return done;
+	
+	public ZadanieGrupa getGrupa() {
+		return grupa;
 	}
-	public void setDone(Boolean done) {
-		this.done = done;
+
+	public void setGrupa(ZadanieGrupa grupa) {
+		this.grupa = grupa;
 	}
+
+	public void updateFrom(Zadanie zrodlo) {
+		super.setDescription(zrodlo.getDescription());
+		super.setDone(zrodlo.isDone());
+		this.deadline = zrodlo.getDeadline();
+		this.grupa = zrodlo.getGrupa();
+	}
+	
+
 
 	
 }
