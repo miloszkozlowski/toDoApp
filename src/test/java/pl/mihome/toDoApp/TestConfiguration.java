@@ -1,5 +1,6 @@
 package pl.mihome.toDoApp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +86,22 @@ public class TestConfiguration {
 				// TODO Auto-generated method stub
 				return false;
 			}
+
+			@Override
+			public List<Zadanie> findByGrupa_Id(Long id) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public List<Zadanie> findByDoneIsFalseAndDeadlineBeforeKiedyOrNull(LocalDateTime kiedy) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			
+			
+			
 		};
 	}
 

@@ -1,5 +1,6 @@
 package pl.mihome.toDoApp.model.DTO;
 
+
 import pl.mihome.toDoApp.model.Zadanie;
 
 public class ZadanieWGrupieOdczyt {
@@ -9,8 +10,9 @@ public class ZadanieWGrupieOdczyt {
 	
 	public ZadanieWGrupieOdczyt(Zadanie zadanie) {
 		this.description = zadanie.getDescription();
-		this.done = zadanie.isDone();
+		this.done = zadanie.isDone();		
 	}
+
 
 	public String getDescription() {
 		return description;

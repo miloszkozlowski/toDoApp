@@ -170,14 +170,14 @@ class ProjektSerwisTest {
 	}
 	
 	Projekt projektZe(String description, Set<Integer> daysToDeadline) {
-		Set<ProjektKroki> kroki = daysToDeadline.stream()
+		List<ProjektKroki> kroki = daysToDeadline.stream()
 				.map(dtd -> {
 					var krok = mock(ProjektKroki.class);
 					when(krok.getDescription()).thenReturn("foo");
 					when(krok.getDaysToDeadline()).thenReturn(dtd);
 					return krok;
 				})
-				.collect(Collectors.toSet());
+				.collect(Collectors.toList());
 		
 		var proj = mock(Projekt.class);
 		when(proj.getDescription()).thenReturn(description);

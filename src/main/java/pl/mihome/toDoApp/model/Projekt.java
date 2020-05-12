@@ -1,6 +1,9 @@
 package pl.mihome.toDoApp.model;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 
 @Entity
@@ -24,9 +28,11 @@ public class Projekt {
 	@NotNull
 	private String description;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "projekt", cascade = CascadeType.ALL)
 	Set<ZadanieGrupa> grupyZadan;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "projekt", cascade = CascadeType.ALL)
 	Set<ProjektKroki> projektKroki; 
 	
@@ -53,8 +59,10 @@ public class Projekt {
 		return id;
 	}
 
-	public Set<ProjektKroki> getProjektKroki() {
-		return projektKroki;
+	public List<ProjektKroki> getProjektKroki() {
+		return projektKroki.stream()
+				.sorted(Comparator.comparingInt(ProjektKroki::getDaysToDeadline))
+				.collect(Collectors.toList());
 	}
 
 	public void setProjektKroki(Set<ProjektKroki> projektKroki) {

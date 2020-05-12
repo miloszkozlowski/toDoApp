@@ -8,17 +8,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import pl.mihome.toDoApp.logic.ZadanieService;
 import pl.mihome.toDoApp.model.*;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 
@@ -26,25 +34,30 @@ import org.slf4j.*;
 
 //@RepositoryRestController - tego używa się, gdy jest bezpośredni dostęp przez @RepositoryRestResource
 @RestController
+@RequestMapping("/taski")
 public class ZadanieController {
 	
 	private final ZadanieRepo repository;
 	private static final Logger logger = LoggerFactory.getLogger(Zadanie.class);
+	private final ZadanieService service;
 	
 
-	public ZadanieController(ZadanieRepo repository) {
+	public ZadanieController(ZadanieRepo repository, ZadanieService service) {
 		this.repository = repository;
+		this.service = service;
 	}
 	
 	// @RequestMapping(method = RequestMethod.GET, path = "/taski") lub prościej:
-	@GetMapping(value = "/taski", params = {"!sort", "!page", "!size"})
-	ResponseEntity<?> readAllZadania()
+	@GetMapping(params = {"!sort", "!page", "!size"})
+//	ResponseEntity<List<Zadanie>> readAllZadania()
+	CompletableFuture<ResponseEntity<List<Zadanie>>> readAllZadania()
 	{
 		logger.warn("Wybrano wszystkie zadania!");
-		return ResponseEntity.ok(repository.findAll());
+//		return ResponseEntity.ok(repository.findAll());
+		return service.findAllAsync().thenApply(ResponseEntity::ok);
 	}
 	
-	@GetMapping(value = "/taski")
+	@GetMapping
 	ResponseEntity<Page<Zadanie>> readAllZadania(Pageable page)
 	{
 		logger.info("Z wyborem stron");
@@ -52,7 +65,7 @@ public class ZadanieController {
 	}
 	
 	@Transactional
-	@PutMapping("/taski/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<?> zmienZadanie(@PathVariable("id") Long id, @RequestBody @Valid Zadanie doAktualizacji) //@RequestBody - spring wypełni z ciała żądania PUT
 	{
 		if(repository.existsById(id))
@@ -73,7 +86,7 @@ public class ZadanieController {
 	 * ta metoda musi miec code{@Transactional} oraz być publiczna.
 	 */
 	@Transactional
-	@PatchMapping("/taski/{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<?> toggleZadanie(@PathVariable Long id) {
 		if(!repository.existsById(id))
 			return ResponseEntity.notFound().build();
@@ -86,8 +99,8 @@ public class ZadanieController {
 		return ResponseEntity.noContent().build();
 	}
 	
-//	@PostMapping("/taski") lub w starszych wersjach (poniżej 4.3):
-	@RequestMapping(method = RequestMethod.POST, path = "/taski")
+	@PostMapping //lub w starszych wersjach (poniżej 4.3):
+//	@RequestMapping(method = RequestMethod.POST, path = "/taski")
 	ResponseEntity<Zadanie> zapiszZadanie(@RequestBody @Valid Zadanie entity)
 	{
 		logger.info("Nowe zadanie zapisane");
@@ -95,7 +108,7 @@ public class ZadanieController {
 		return ResponseEntity.created(URI.create("/Taski/"+stworzone.getId())).body(stworzone);
 	}
 	
-	@GetMapping("/taski/{id}")
+	@GetMapping("/{id}")
 	ResponseEntity<Zadanie> readZadanieById(@PathVariable Long id)
 	{
 		Optional<Zadanie> opcja = repository.findById(id);
@@ -110,6 +123,31 @@ public class ZadanieController {
 			return ResponseEntity.notFound().build();
 		}
 		
+	}
+	
+	@GetMapping("/search/today")
+	ResponseEntity<List<Zadanie>> readZadaniaNaDzisiaj() {
+		return ResponseEntity.ok(repository.findByDoneIsFalseAndDeadlineBeforeKiedyOrNull(LocalDate.now().plusDays(1).atStartOfDay()));
+		
+		
+	}
+	
+	@GetMapping("/search/done")
+	ResponseEntity<?> readZadaniaByDone(@RequestParam(defaultValue = "true", value = "state") String stan) {
+		if(stan.equals("true") || stan.equals("false")) {
+		Boolean oczekiwanyStan = Boolean.valueOf(stan);
+		List<Zadanie> lista = repository.findAll().stream()
+				.filter(zad -> zad.isDone() == oczekiwanyStan)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(lista);
+		}
+		
+		return ResponseEntity.badRequest().build();
+	}
+	
+	@GetMapping("/test")
+	void oldFashionWay(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		resp.getWriter().print("Test text");
 	}
 
 }

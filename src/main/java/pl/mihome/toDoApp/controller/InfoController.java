@@ -2,11 +2,13 @@ package pl.mihome.toDoApp.controller;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import pl.mihome.toDoApp.ZadanieConfigurationProperties;
 
 @RestController
+@RequestMapping("/info")
 public class InfoController {
 	
 	private ZadanieConfigurationProperties myAppConfig;
@@ -26,12 +28,12 @@ public InfoController(ZadanieConfigurationProperties myAppConfig, DataSourceProp
  *	@Value("${task.allowMultipleTasksFromTemplate}")
  *	private Boolean prop;
 */	
-	@GetMapping("/info/url")
+	@GetMapping("/url")
 	String showDBUrl() {
 		return dataSource.getUrl();
 	}
 	
-	@GetMapping("/info/prop")
+	@GetMapping("/prop")
 	Boolean showProp() {
 		return myAppConfig.getTemplate().isAllowMultipleTasks();
 	}

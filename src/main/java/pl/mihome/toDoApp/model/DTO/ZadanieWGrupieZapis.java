@@ -2,12 +2,18 @@ package pl.mihome.toDoApp.model.DTO;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import pl.mihome.toDoApp.model.Zadanie;
 import pl.mihome.toDoApp.model.ZadanieGrupa;
 
 public class ZadanieWGrupieZapis {
 
+	@NotBlank(message = "Treść opisu zadania nie może być pusta")
 	private String description;
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private LocalDateTime deadline;
 	
 	

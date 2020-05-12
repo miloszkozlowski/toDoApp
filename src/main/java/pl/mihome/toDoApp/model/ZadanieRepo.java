@@ -1,5 +1,6 @@
 package pl.mihome.toDoApp.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +24,10 @@ public interface ZadanieRepo {
 	boolean existsById(Long id);
 	
 	boolean existsByDoneIsFalseAndGrupa_Id(Long taskGroupId);
+	
+	List<Zadanie> findByGrupa_Id(Long id);
+
+	//List<Zadanie> findByDoneIsTrueAndDeadlineIsBeforeKiedy(LocalDateTime kiedy);
+
+	List<Zadanie> findByDoneIsFalseAndDeadlineBeforeKiedyOrNull(LocalDateTime kiedy);
 }

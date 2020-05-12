@@ -8,11 +8,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import pl.mihome.toDoApp.ZadanieConfigurationProperties;
+import pl.mihome.toDoApp.exeptions.GroupDoneAgainstPolicyException;
+import pl.mihome.toDoApp.exeptions.NoSuchGroupException;
+import pl.mihome.toDoApp.model.Projekt;
 import pl.mihome.toDoApp.model.ZadanieGrupa;
 import pl.mihome.toDoApp.model.ZadanieGrupaRepo;
 import pl.mihome.toDoApp.model.ZadanieRepo;
 import pl.mihome.toDoApp.model.DTO.ZadanieGrupaOdczyt;
 import pl.mihome.toDoApp.model.DTO.ZadanieGrupaZapis;
+import pl.mihome.toDoApp.model.DTO.ZadanieWGrupieOdczyt;
 
 /*
  * 	{@code @Service} definiuje serwis, czyli pośrednika między kontrolerem a repozytorium. 
@@ -50,7 +54,11 @@ public class ZadanieGrupaSerwis {
 	}
 	
 	public ZadanieGrupaOdczyt zapiszZadanieGrupa(ZadanieGrupaZapis grupa) {
-		ZadanieGrupa zg = repository.save(grupa.zapiszDoZadanieGrupa());
+		return zapiszZadanieGrupa(grupa, null);
+	}
+	
+	public ZadanieGrupaOdczyt zapiszZadanieGrupa(ZadanieGrupaZapis grupa, Projekt projekt) {
+		ZadanieGrupa zg = repository.save(grupa.zapiszDoZadanieGrupa(projekt));
 		return new ZadanieGrupaOdczyt(zg);
 	}
 	
@@ -63,10 +71,16 @@ public class ZadanieGrupaSerwis {
 	
 	public void toggleGroup(Long id) {
 		if(taskRepository.existsByDoneIsFalseAndGrupa_Id(id))
-			throw new IllegalStateException("Nie można zmienić stanu grupy gdy istnieje niewykonane zadanie. Zakończ wszystkie zadania w grupie.");
-		ZadanieGrupa zg = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Nie ma takiej grupy."));
+			throw new GroupDoneAgainstPolicyException();
+		ZadanieGrupa zg = repository.findById(id).orElseThrow(() -> new NoSuchGroupException());
 		zg.setDone(!zg.isDone());
 		repository.save(zg);
+	}
+	
+	public List<ZadanieWGrupieOdczyt> pokazTaskiWGrupie(Long id) {
+		return taskRepository.findByGrupa_Id(id).stream()
+			.map(z -> new ZadanieWGrupieOdczyt(z))
+			.collect(Collectors.toList());
 	}
 
 }

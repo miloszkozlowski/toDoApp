@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_black.min.css">
+<style>
+	.Bd {
+		border:solid 1px white;
+	}
+	.Bdc\(red\) {
+		border-color: red !important;
+	}
+	.C\(red\) {
+		color: red;
+	}
+	.P\(0\) {
+		padding: 0;
+	}
+	.P\(10px\) {
+		padding: 10px;
+	}
+</style>
+<title>Grupy - toDoApp - kurs Spring Mateusza Ch.</title>
+</head>
+<body>
+<main>
+	<nav>
+		<ul>
+			<li><a href="/"><< Wróć</a></li>
+		</ul>
+	</nav>
+	<h2 th:if="${msg != null}" th:text="${msg}"></h2>
+	<form method="post" action="#" th:each="grupa, grupaStat : ${wszystkieGrupy}" th:action="@{/grupazadan}">
+		<dl class="Bd P(10px)">
+			<dt><input type="hidden" name="groupId" th:value="${grupa.id}"><input type="checkbox" name="chGrStatus" th:checked="${grupa.done}" onChange="this.form.submit()"><span th:text="${grupa.description}"></span> <small th:text="|(${grupa.deadline})|"></small></dt>
+			<dd>
+				<ul class="P(0)">
+					<li th:each="zadanie : ${grupa.zadania}" ><a href="#" th:href="@{/zadania.html/?group={grupaId}(grupaId=${grupa.id})}"><del th:if="${zadanie.done}" th:text="${zadanie.description}"></del><span th:if="${!zadanie.done}" th:text="${zadanie.description}"></span></a></li>
+				</ul>
+			</dd>
+		</dl>
+	</form>
+		<fieldset id="nowa">
+			<legend>Nowa grupa</legend>
+			<form action="#" method="post" th:action="@{/grupazadan#nowa}" th:object="${nowaGrupa}">
+			<p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}">Błedy</p>
+			<label>Opis
+				<input type="text" th:errorclass="'Bdc(red)'" th:field="*{description}" />
+			</label>
+			<fieldset th:each="zadanie, zadanieStat : *{zadania}">
+				<legend th:text="'Zadanie ' + ${zadanieStat.index + 1}"></legend>
+				<label>Opis zadania
+					<input type="text" th:errorclass="'Bdc(red)'" th:field="*{zadania[__${zadanieStat.index}__].description}" /> 
+				</label>
+				<label>Deadline
+					<input type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" th:errorclass="'Bdc(red)'" th:field="*{zadania[__${zadanieStat.index}__].deadline}" /> 
+				</label>
+				<button type="submit" name="remZadanie">usuń</button>
+			</fieldset>
+			<div>
+				<button type="submit" name="remZadanie" th:if="${#lists.size(nowaGrupa.zadania) > 1}">-</button>
+				<button type="submit" name="addZadanie">+</button>
+			</div>
+			<p>
+				<button type="submit">Dodaj grupę</button>
+				<button type="reset">Wyczyść</button>
+			</p>
+			</form>
+		</fieldset>
+
+</main>
+
+</body>
+</html>

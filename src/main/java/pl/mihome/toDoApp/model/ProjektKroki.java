@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
 
 import com.sun.istack.NotNull;
 
@@ -19,12 +20,13 @@ public class ProjektKroki {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull
+	@NotBlank(message = "Opis kroku nie może być pusty")
 	private String description;
 	
 	@NotNull
-	@Max(0)
+	@Max(value = 0, message = "Ilość dni do deadline musi być podana w formie ujemnej - np. \"-2\".")
 	private int daysToDeadline;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "project_id")

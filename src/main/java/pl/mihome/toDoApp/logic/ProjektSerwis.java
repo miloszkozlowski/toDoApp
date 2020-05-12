@@ -6,9 +6,11 @@ import java.util.stream.Collectors;
 
 
 import pl.mihome.toDoApp.ZadanieConfigurationProperties;
+import pl.mihome.toDoApp.exeptions.NoSuchGroupException;
 import pl.mihome.toDoApp.model.Projekt;
 import pl.mihome.toDoApp.model.ProjektRepo;
 import pl.mihome.toDoApp.model.ZadanieGrupaRepo;
+import pl.mihome.toDoApp.model.DTO.ProjektZapis;
 import pl.mihome.toDoApp.model.DTO.ZadanieGrupaOdczyt;
 import pl.mihome.toDoApp.model.DTO.ZadanieGrupaZapis;
 import pl.mihome.toDoApp.model.DTO.ZadanieWGrupieZapis;
@@ -32,8 +34,8 @@ public class ProjektSerwis {
 		return repository.findAll();
 	}
 	
-	public Projekt zapisz(Projekt entity) {
-		return repository.save(entity);
+	public Projekt zapisz(ProjektZapis entity) {
+		return repository.save(entity.zapiszDoProjektu());
 	}
 
 	public ZadanieGrupaOdczyt stworzGrupeZadan(Long idProjektu, LocalDateTime deadline) {
@@ -52,10 +54,10 @@ public class ProjektSerwis {
 													zadanie.setDeadline(deadline.plusDays(projektKroki.getDaysToDeadline()));
 													return zadanie;
 											}
-										).collect(Collectors.toSet())
+										).collect(Collectors.toList())
 								);
-								return taskGroupService.zapiszZadanieGrupa(targetGroup);
-							}).orElseThrow(() -> new IllegalArgumentException("Nie ma takiego projektu"));
+								return taskGroupService.zapiszZadanieGrupa(targetGroup, projekt);
+							}).orElseThrow(() -> new NoSuchGroupException());
 		
 		return result;
 			

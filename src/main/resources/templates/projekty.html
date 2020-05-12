@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://igoradamenko.github.io/awsm.css/css/awsm_theme_black.min.css">
+<style>
+	.Bd {
+		border:solid 1px white;
+	}
+	.Bdc\(red\) {
+		border-color: red !important;
+	}
+	.C\(red\) {
+		color: red;
+	}
+	.P\(0\) {
+		padding: 0;
+	}
+	.P\(10px\) {
+		padding: 10px;
+	}
+</style>
+<title>Projekty - toDoApp - kurs Spring Mateusza Ch.</title>
+</head>
+<body>
+<main>
+	<nav>
+		<ul>
+			<li><a href="/"><< Wróć</a></li>
+		</ul>
+	</nav>
+	<h2 th:if="${wiadomosc != null}" th:text="${wiadomosc}"></h2>
+	<dl th:each="projekty : ${wszystkieProjekty}" class="Bd P(10px)">
+		<dt th:text="${projekty.description}"></dt>
+		<dd>
+			<ul class="P(0)">
+				<li th:each="step : ${projekty.projektKroki}" th:text="|${step.description} (${step.daysToDeadline} dni)|"></li>
+			
+			</ul>
+			<form method="post" action="#" th:action="@{/projekt/{projektId}(projektId=${projekty.id})}">
+				<label>Deadline
+					<input name="deadline" type="datetime-local" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}">
+				</label>
+				<button type="submit">Dodaj zadania >></button>
+			</form>
+		</dd>
+	</dl>
+	
+		<fieldset>
+			<legend>Nowy projekt</legend>
+			<form action="#" method="post" th:action="@{/projekt}" th:object="${projekt}">
+			<p class="C(red)" th:if="${#fields.hasAnyErrors()}" th:errors="*{all}">Błedy</p>
+			<label>Opis
+				<input type="text" th:errorclass="'Bdc(red)'" th:field="*{description}" />
+			</label>
+			<fieldset th:each="step, stepStat : *{kroki}">
+				<legend th:text="'Krok ' + ${stepStat.index + 1}"></legend>
+				<label>Opis kroku
+					<input type="text" th:errorclass="'Bdc(red)'" th:field="*{kroki[__${stepStat.index}__].description}" /> 
+				</label>
+				<label>Liczba dni do deadline
+					<input type="number" th:errorclass="'Bdc(red)'" th:field="*{kroki[__${stepStat.index}__].daysToDeadline}" /> 
+				</label>
+			</fieldset>
+			<div>
+				<button type="submit" name="addStep">+</button>
+			</div>
+			<p>
+				<button type="submit">Dodaj ten projekt</button>
+				<button type="reset">Wyczyść</button>
+			</p>
+			</form>
+		</fieldset>
+
+</main>
+
+</body>
+</html>

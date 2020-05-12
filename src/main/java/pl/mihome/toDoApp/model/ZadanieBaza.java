@@ -13,7 +13,7 @@ abstract public class ZadanieBaza {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank(message = "Treść zadania zadań nie może być pusta")
+	@NotBlank(message = "Opis nie może być pusta")
 	private String description;
 	@NotNull(message = "Done musi mieć wartość")
 	private Boolean done = false;
