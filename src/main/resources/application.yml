@@ -6,3 +6,8 @@ task:
   allowMultipleTasks: false
 management.endpoints.web:
  base-path: "/status"
+keycloak:
+ auth-server-url: 'http://192.168.0.190:8180/auth'
+ realm: 'toDoApp'
+ resource: 'toDoApp-Spring-client'
+ public-client: true

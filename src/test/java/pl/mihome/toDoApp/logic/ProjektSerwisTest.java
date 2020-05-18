@@ -231,6 +231,12 @@ class ProjektSerwisTest {
 
 			return result.isPresent();
 		}
+
+		@Override
+		public boolean existsByDescription(String description) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 		
 	}
 	

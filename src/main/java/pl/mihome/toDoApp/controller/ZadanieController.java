@@ -1,6 +1,7 @@
 package pl.mihome.toDoApp.controller;
 
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,11 +41,13 @@ public class ZadanieController {
 	private final ZadanieRepo repository;
 	private static final Logger logger = LoggerFactory.getLogger(Zadanie.class);
 	private final ZadanieService service;
+	private final ApplicationEventPublisher aep;
 	
 
-	public ZadanieController(ZadanieRepo repository, ZadanieService service) {
+	public ZadanieController(ZadanieRepo repository, ZadanieService service, ApplicationEventPublisher aep) {
 		this.repository = repository;
 		this.service = service;
+		this.aep = aep;
 	}
 	
 	// @RequestMapping(method = RequestMethod.GET, path = "/taski") lub prościej:
@@ -91,10 +94,9 @@ public class ZadanieController {
 		if(!repository.existsById(id))
 			return ResponseEntity.notFound().build();
 		logger.info("Zmienianie Done...");
-		repository.findById(id).ifPresent(zadanie -> {
-			zadanie.setDone(!zadanie.isDone());
-			logger.info("Nowy status done dla id "+id+": "+zadanie.isDone());
-		});
+		repository.findById(id)
+		.map(Zadanie::toggle)
+		.ifPresent(aep::publishEvent);
 		
 		return ResponseEntity.noContent().build();
 	}

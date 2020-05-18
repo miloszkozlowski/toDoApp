@@ -12,5 +12,7 @@ public interface ZadanieGrupaRepo {
 	Optional<ZadanieGrupa> findById(Long id);
 	
 	boolean existsByDoneIsFalseAndProjekt_Id(Long projektId);
+	
+	boolean existsByDescription(String description);
 
 }

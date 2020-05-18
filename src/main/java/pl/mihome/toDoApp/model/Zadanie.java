@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import pl.mihome.toDoApp.model.customEvents.ZadanieEvent;
+
 
 
 @Entity
@@ -60,6 +62,11 @@ public class Zadanie extends ZadanieBaza {
 
 	public void setGrupa(ZadanieGrupa grupa) {
 		this.grupa = grupa;
+	}
+	
+	public ZadanieEvent toggle() { //metoda, która zastepuję setDone (tutaj w ZadanieBaza i dlatego tam został setDone(..), a korzysta z własnego Eventu
+		super.setDone(!super.isDone());
+		return ZadanieEvent.changed(this);
 	}
 
 	public void updateFrom(Zadanie zrodlo) {

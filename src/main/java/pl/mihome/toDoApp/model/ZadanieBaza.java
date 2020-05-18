@@ -4,7 +4,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
@@ -13,8 +12,9 @@ abstract public class ZadanieBaza {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NotBlank(message = "Opis nie może być pusta")
+	
 	private String description;
+	
 	@NotNull(message = "Done musi mieć wartość")
 	private Boolean done = false;
 
