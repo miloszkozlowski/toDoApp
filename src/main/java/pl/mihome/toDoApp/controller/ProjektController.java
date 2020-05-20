@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import pl.mihome.toDoApp.model.ProjektKroki;
 import pl.mihome.toDoApp.model.DTO.ProjektZapis;
 
 @Controller
+@PreAuthorize("hasRole('ROLE_ADMIN')") //tutaj jest abrdziej elastycznie niż {@code @Secured} albo {@code @RolesAllowed}, bo używa się Spring-EL, więc można robić or i inne
 @RequestMapping("/projekt")
 public class ProjektController {
 	

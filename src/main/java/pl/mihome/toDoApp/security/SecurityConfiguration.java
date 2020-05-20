@@ -7,6 +7,7 @@ import org.keycloak.adapters.springsecurity.config.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -14,6 +15,11 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 @KeycloakConfiguration
+@EnableGlobalMethodSecurity( //ta adnotacja pozwala korzystać z wbudowanych aspektów tkaich jak {@code @Secured @RolesAllowed}
+		jsr250Enabled = true, //włącza adnotacje pochodzące z JEE
+		securedEnabled = true, //adnotacje springowe
+		prePostEnabled = true
+		)
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 	
 	/*
@@ -66,10 +72,10 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 	protected void configure(HttpSecurity http) throws Exception {
 		super.configure(http);
 		http.authorizeRequests()
-			.antMatchers("/info/*")
+			/*.antMatchers("/info/*") //tutaj można globalne zabezpieczenia zrobić, ale można też aspektami przez adnotacje na klasach i/lub  metodach
 			.hasRole("USER")
-			.antMatchers("/projekt/*")
-			.hasRole("ADMIN")
+			.antMatchers("/projekt")
+			.hasRole("ADMIN")*/
 			.anyRequest()
 			.permitAll();
 	}

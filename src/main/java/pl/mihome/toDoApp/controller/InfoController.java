@@ -1,6 +1,9 @@
 package pl.mihome.toDoApp.controller;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,11 +31,13 @@ public InfoController(ZadanieConfigurationProperties myAppConfig, DataSourceProp
  *	@Value("${task.allowMultipleTasksFromTemplate}")
  *	private Boolean prop;
 */	
+	@RolesAllowed("ROLE_ADMIN") //adnotacja pochodząca z JEE
 	@GetMapping("/url")
 	String showDBUrl() {
 		return dataSource.getUrl();
 	}
 	
+	@Secured("ROLE_ADMIN") //admontacja Springowa
 	@GetMapping("/prop")
 	Boolean showProp() {
 		return myAppConfig.getTemplate().isAllowMultipleTasks();

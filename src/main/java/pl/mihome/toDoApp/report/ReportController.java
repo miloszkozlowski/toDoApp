@@ -42,8 +42,9 @@ public class ReportController {
 			.orElse(ResponseEntity.notFound().build());
 	}
 	
-	
+	@SuppressWarnings("unused")
 	private static class ZadanieWithChangesCount {
+		
 		
 		public String description;
 		public boolean done;
@@ -58,6 +59,7 @@ public class ReportController {
 		
 	}
 	
+	@SuppressWarnings("unused")
 	private static class ZadanieWithDoneDateCheck {
 		
 		public String description;

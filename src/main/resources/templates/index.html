@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:sec="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +12,12 @@
 	<p>Aplikacja webowa - projekt z kursu Spring Mateusza Ch.</p>
 	<nav>
 		<ul>
-			<li><a href="/projekt">Projekty</a></li>
+			<li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/projekt">Projekty</a></li>
 			<li><a href="/grupazadan">Grupy zadań</a></li>
 			<li><a href="/zadania.html">Zadania</a></li>
 		</ul>
 	</nav>
+	<h2 th:if="${wiadomosc != null}" th:text="${wiadomosc}"></h2>
 </main>
 </body>
 </html>
